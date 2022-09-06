@@ -57,7 +57,7 @@
             </header>
             <div class="card">
                 <div class="card-header">
-                    Folders
+                    User Folders
                 </div>
             <nav>
                 <ul class="list-group">
@@ -68,16 +68,29 @@
                     </li>
                 </ul>
             </nav>
+                <div class="card-header">
+                    Default Folders
+                </div>
+                <nav>
+                    <ul class="list-group">
+                        <li th:each="myfolder:${folders}"
+                            class="list-group-item d-flex justify-content-between align-items-center">
+                            <span th:text="${myfolder.label}">Label</span>
+                            <span class="badge bg-primary rounded-pill">14</span>
+                        </li>
+                    </ul>
+                </nav>
             </div>
             <main>
-                <div class="list-group">
-                    <a href="#" th:each="message:${emailList}" class="list-group-item list-group-item-action">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1" th:text="${message.subject}">List group item heading</h5>
-                            <small>3 days ago</small>
-                        </div>
-                        <p class="mb-1" th:text="${message.to}">Some placeholder content in a paragraph.</p>
-                    </a>
+                    <nav>
+                        <a href="#" th:each="message:${emailList}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1" th:text="${message.subject}">List group item heading</h5>
+                                <small th:text="${message.agoTimeString}">Mins ago</small>
+                            </div>
+                            <p class="mb-1" th:text="${message.to}">Some placeholder content in a paragraph.</p>
+                        </a>
+                    </nav>
                 </div>
             </main>
 
