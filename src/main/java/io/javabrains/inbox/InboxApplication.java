@@ -1,6 +1,8 @@
 package io.javabrains.inbox;
 
 import com.datastax.oss.driver.api.core.uuid.Uuids;
+import io.javabrains.inbox.email.Email;
+import io.javabrains.inbox.email.EmailRepository;
 import io.javabrains.inbox.emailList.EmailListItem;
 import io.javabrains.inbox.emailList.EmailListItemKey;
 import io.javabrains.inbox.emailList.EmailListItemRepository;
@@ -27,6 +29,8 @@ public class InboxApplication {
 	FolderRepository folderRepository;
 	@Autowired
 	EmailListItemRepository emailListItemRepository;
+	@Autowired
+	EmailRepository emailRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(InboxApplication.class, args);
@@ -60,6 +64,16 @@ public class InboxApplication {
 			emailListItem.setUnread(true);
 
 			emailListItemRepository.save(emailListItem);
+
+			Email email = new Email();
+			email.setId(emailListItemKey.getTimeUUID());
+			email.setTo(emailListItem.getTo());
+			email.setSubject(emailListItem.getSubject());
+			email.setFrom("Jay-Shah5109");
+			email.setTo(emailListItem.getTo());
+			email.setBody("Body"+i);
+
+			emailRepository.save(email);
 
 		}
 	}
