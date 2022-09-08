@@ -5,6 +5,7 @@ import io.javabrains.inbox.emailList.EmailListItem;
 import io.javabrains.inbox.emailList.EmailListItemRepository;
 import io.javabrains.inbox.folders.Folder;
 import io.javabrains.inbox.folders.FolderRepository;
+import io.javabrains.inbox.folders.FolderService;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,6 +26,8 @@ public class InboxController {
     private FolderRepository folderRepository;
     @Autowired
     private EmailListItemRepository emailListItemRepository;
+    @Autowired
+    private FolderService folderService;
 
     @GetMapping(value = "/")
     public String homePage(@AuthenticationPrincipal OAuth2User principal, Model model) {
@@ -32,10 +35,16 @@ public class InboxController {
             return "index";
         }
         String user = principal.getAttribute("login");
+
         List<Folder> userFolders = folderRepository.findAllById(user);
+
         List<Folder> folders = folderRepository.findAll();
         model.addAttribute("userFolders", userFolders);
-        model.addAttribute("folders", folders);
+
+        List<Folder> defaultFolders = folderService.getDefaultFolders(user);
+        model.addAttribute("defaultFolders", defaultFolders);
+
+//        model.addAttribute("folders", folders);
         model.addAttribute("username", user);
 
         String folderLabel = "Inbox";

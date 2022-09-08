@@ -52,34 +52,14 @@
 <body>
         <div class="container">
             <header>
-                <h1>Hello </h1><h1 th:text="${username}"></h1>
+                <h1 style="display:inline">Hello, </h1><h1 style="display:inline" th:text="${username}"></h1>
             </header>
-            <div class="card">
-                <div class="card-header">
-                    User Folders
-                </div>
             <nav>
-                <ul class="list-group">
-                    <li th:each="folder:${userFolders}"
-                        class="list-group-item d-flex justify-content-between align-items-center">
-                        <span th:text="${folder.label}">Label</span>
-                        <span class="badge bg-primary rounded-pill">14</span>
-                    </li>
-                </ul>
-            </nav>
-                <div class="card-header">
-                    Default Folders
+                <div th:insert="components/folder-list::folder-list(panelName='Folders',folders=${defaultFolders})">
                 </div>
-                <nav>
-                    <ul class="list-group">
-                        <li th:each="myfolder:${folders}"
-                            class="list-group-item d-flex justify-content-between align-items-center">
-                            <span th:text="${myfolder.label}">Label</span>
-                            <span class="badge bg-primary rounded-pill">14</span>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+                <div th:insert="components/folder-list::folder-list(panelName='User Folders',folders=${userFolders})">
+                </div>
+            </nav>
             <main>
                 <div class="card" th:if="${emailList}">
                     <div class="card-header">Inbox</div>
