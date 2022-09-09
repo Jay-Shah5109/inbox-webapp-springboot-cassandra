@@ -1,7 +1,5 @@
 package io.javabrains.inbox.controllers;
 
-import io.javabrains.inbox.email.Email;
-import io.javabrains.inbox.email.EmailRepository;
 import io.javabrains.inbox.folders.Folder;
 import io.javabrains.inbox.folders.FolderRepository;
 import io.javabrains.inbox.folders.FolderService;
@@ -12,25 +10,24 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Controller
-public class EmailController {
+public class ComposeController {
 
     @Autowired
     private FolderRepository folderRepository;
     @Autowired
-    private EmailRepository emailRepository;
-    @Autowired
     private FolderService folderService;
 
-    @GetMapping(value = "/emails/{id}")
-    public String emailView(@PathVariable UUID id, @AuthenticationPrincipal OAuth2User principal,
-                            Model model) {
+    @GetMapping(value = "/compose")
+    public String getComposePage(@RequestParam(required = false) String to,
+            @AuthenticationPrincipal OAuth2User principal,
+                                 Model model) {
 
         if (principal == null || !StringUtils.hasText(principal.getAttribute("login"))) {
             return "index";
@@ -43,16 +40,19 @@ public class EmailController {
         List<Folder> defaultFolders = folderService.getDefaultFolders(user);
         model.addAttribute("defaultFolders", defaultFolders);
 
+        if (StringUtils.hasText(to)) {
+            String[] splitIDs = to.split(",");
+            List<String> uniqueToIds = Arrays.asList(splitIDs).stream()
+                    .map(id -> StringUtils.trimWhitespace(id))
+                    .filter(id -> StringUtils.hasText(id))
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            model.addAttribute("toIDs", String.join(",", uniqueToIds));
+        }
+
         model.addAttribute("username", user);
 
-        Optional<Email> optionalEmail = emailRepository.findById(id);
-        if (!optionalEmail.isPresent()) {
-            return "inboxpage";
-        }
-        Email email = optionalEmail.get();
-        String toIds = String.join(", ",email.getTo()); // comma seperated values for list of strings in 'To'
-        model.addAttribute("email", email);
-        model.addAttribute("toIds",toIds);
-        return "emailpage";
+        return "composepage";
     }
 }

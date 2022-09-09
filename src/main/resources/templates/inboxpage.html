@@ -55,6 +55,9 @@
                 <h1 style="display:inline">Hello, </h1><h1 style="display:inline" th:text="${username}"></h1>
             </header>
             <nav>
+                <div class="card">
+                    <a href="/compose" class="btn btn-primary">Compose Message</a>
+                </div>
                 <div th:insert="components/folder-list::folder-list(panelName='Folders',folders=${defaultFolders})">
                 </div>
                 <div th:insert="components/folder-list::folder-list(panelName='User Folders',folders=${userFolders})">
@@ -62,7 +65,7 @@
             </nav>
             <main>
                 <div class="card" th:if="${emailList}">
-                    <div class="card-header">Inbox</div>
+                    <div th:text="${folderName}" class="card-header">Inbox</div>
                     <div class="card-body">
                         <div class="list-group">
                             <nav>
