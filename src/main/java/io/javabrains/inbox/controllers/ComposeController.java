@@ -49,6 +49,8 @@ public class ComposeController {
         model.addAttribute("defaultFolders", defaultFolders);
         List<String> uniqueToIds = splitIDs(to);
         model.addAttribute("toIDs", String.join(",", uniqueToIds));
+        // Handling count functionality
+        model.addAttribute("stats", folderService.mapCountToLabels(user));
 
         model.addAttribute("username", user);
 
