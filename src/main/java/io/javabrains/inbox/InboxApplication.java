@@ -56,6 +56,9 @@ public class InboxApplication {
 			emailService.sendEmail("Jay-Shah5109", Arrays.asList("Jay-Shah5109","abc"), "Subject:"+i,
 					"Body:"+i);
 		}
+
+		emailService.sendEmail("abc", Arrays.asList("def","abc"), "Subject: Unknown",
+				"Body: Unknown");
 	}
 
 }

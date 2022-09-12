@@ -54,7 +54,7 @@ public class InboxController {
 
 
 //        model.addAttribute("folders", folders);
-        model.addAttribute("username", user);
+        model.addAttribute("username", principal.getAttribute("name"));
 
         // Fetch messages
 

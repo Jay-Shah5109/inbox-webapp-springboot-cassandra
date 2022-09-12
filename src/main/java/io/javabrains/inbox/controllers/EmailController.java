@@ -52,7 +52,7 @@ public class EmailController {
         List<Folder> defaultFolders = folderService.getDefaultFolders(user);
         model.addAttribute("defaultFolders", defaultFolders);
 
-        model.addAttribute("username", user);
+        model.addAttribute("username", principal.getAttribute("name"));
 
         Optional<Email> optionalEmail = emailRepository.findById(id);
         if (!optionalEmail.isPresent()) {
@@ -60,6 +60,12 @@ public class EmailController {
         }
         Email email = optionalEmail.get();
         String toIds = String.join(", ",email.getTo()); // comma seperated values for list of strings in 'To'
+
+        // Check if the email belongs to specified user or it belongs to specified list of recipients
+        if (!email.getFrom().equals(user) && !email.getTo().contains(user)) {
+            return "redirect:/";
+        }
+
         model.addAttribute("email", email);
         model.addAttribute("toIds",toIds);
 

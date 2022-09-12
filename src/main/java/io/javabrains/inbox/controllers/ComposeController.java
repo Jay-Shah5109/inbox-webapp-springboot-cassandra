@@ -52,7 +52,7 @@ public class ComposeController {
         // Handling count functionality
         model.addAttribute("stats", folderService.mapCountToLabels(user));
 
-        model.addAttribute("username", user);
+        model.addAttribute("username", principal.getAttribute("name"));
 
         return "composepage";
     }
