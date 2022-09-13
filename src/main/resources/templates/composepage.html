@@ -83,11 +83,13 @@
                     <div class="form-group">
                         <label for="subject">Subject</label>
                         <input type="text" class="form-control" name="subject" id="subject"
+                               th:value="${subject}"
                                placeholder="Enter subject">
                     </div>
                     <div class="form-group">
                         <label for="body">Body</label>
-                        <textarea rows="10" type="text" class="form-control" id="body" name="body"
+                        <textarea rows="10" th:text="${body}"
+                                  type="text" class="form-control" id="body" name="body"
                                   placeholder="Enter message body">
                         </textarea>
                     </div>

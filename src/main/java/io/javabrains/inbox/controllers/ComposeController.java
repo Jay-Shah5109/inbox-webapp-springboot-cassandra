@@ -1,5 +1,7 @@
 package io.javabrains.inbox.controllers;
 
+import io.javabrains.inbox.email.Email;
+import io.javabrains.inbox.email.EmailRepository;
 import io.javabrains.inbox.email.EmailService;
 import io.javabrains.inbox.folders.Folder;
 import io.javabrains.inbox.folders.FolderRepository;
@@ -17,9 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -31,9 +31,12 @@ public class ComposeController {
     private FolderService folderService;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private EmailRepository emailRepository;
 
     @GetMapping(value = "/compose")
     public String getComposePage(@RequestParam(required = false) String to,
+            @RequestParam(required = false) UUID uuid,
             @AuthenticationPrincipal OAuth2User principal,
                                  Model model) {
 
@@ -51,6 +54,18 @@ public class ComposeController {
         model.addAttribute("toIDs", String.join(",", uniqueToIds));
         // Handling count functionality
         model.addAttribute("stats", folderService.mapCountToLabels(user));
+
+        Optional<Email> optionalEmail = emailRepository.findById(uuid);
+        if (optionalEmail.isPresent()) {
+            Email email = optionalEmail.get();
+            if (emailService.doesHaveAccess(email, user)) {
+                model.addAttribute("subject", emailService.getReplySubject(email.getSubject()));
+                model.addAttribute("body", emailService.getReplyBody(email));
+            }
+
+        }
+        Email email = optionalEmail.get();
+        model.addAttribute("email", email);
 
         model.addAttribute("username", principal.getAttribute("name"));
 
