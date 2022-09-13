@@ -51,8 +51,6 @@ public class InboxController {
         // Handling count functionality
         model.addAttribute("stats", folderService.mapCountToLabels(user));
 
-
-
 //        model.addAttribute("folders", folders);
         model.addAttribute("username", principal.getAttribute("name"));
 
