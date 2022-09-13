@@ -85,7 +85,9 @@
                         <a th:href="@{'/compose?to='+${email.from}+'&uuid='+${email.id}}"
                            class="btn btn-primary btn-sm">Reply</a>
                         <a th:href="@{'/compose?to='+${email.from}+','+${toIds}+'&uuid='+${email.id}}"
-                           class="btn btn-secondary btn-sm">Reply All</a>
+                           class="btn btn-primary btn-sm">Reply All</a>
+                        <a th:href="@{'/delete?uuid='+${email.id}}"
+                           class="btn btn-secondary btn-sm">Delete</a>
                     </div>
                 </div>
             </main>
