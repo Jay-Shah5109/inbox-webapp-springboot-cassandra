@@ -46,6 +46,10 @@
             footer {
               grid-area: footer;
             }
+
+            .body-text  {
+                white-space: pre-wrap;
+            }
     </style>
 
 </head>
@@ -76,11 +80,11 @@
                             <dt>Subject</dt>
                             <dd th:text="${email.subject}"></dd>
                             <dt>Body</dt>
-                            <dd th:text="${email.body}"></dd>
+                            <dd class="body-text" th:text="${email.body}"></dd>
                         </dl>
-                        <a th:href="@{'/compose?to='+${email.from}}"
+                        <a th:href="@{'/compose?to='+${email.from}+'&uuid='+${email.id}}"
                            class="btn btn-primary btn-sm">Reply</a>
-                        <a th:href="@{'/compose?to='+${email.from}+','+${toIds}}"
+                        <a th:href="@{'/compose?to='+${email.from}+','+${toIds}+'&uuid='+${email.id}}"
                            class="btn btn-secondary btn-sm">Reply All</a>
                     </div>
                 </div>

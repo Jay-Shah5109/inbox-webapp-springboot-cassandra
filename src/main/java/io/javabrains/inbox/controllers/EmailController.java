@@ -2,6 +2,7 @@ package io.javabrains.inbox.controllers;
 
 import io.javabrains.inbox.email.Email;
 import io.javabrains.inbox.email.EmailRepository;
+import io.javabrains.inbox.email.EmailService;
 import io.javabrains.inbox.emailList.EmailListItem;
 import io.javabrains.inbox.emailList.EmailListItemKey;
 import io.javabrains.inbox.emailList.EmailListItemRepository;
@@ -36,6 +37,8 @@ public class EmailController {
     private EmailListItemRepository emailListItemRepository;
     @Autowired
     private UnreadEmailStatsRepository unreadEmailStatsRepository;
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping(value = "/emails/{id}")
     public String emailView(@RequestParam String folder, @PathVariable UUID id,
@@ -52,7 +55,7 @@ public class EmailController {
         List<Folder> defaultFolders = folderService.getDefaultFolders(user);
         model.addAttribute("defaultFolders", defaultFolders);
 
-        model.addAttribute("username", user);
+        model.addAttribute("username", principal.getAttribute("name"));
 
         Optional<Email> optionalEmail = emailRepository.findById(id);
         if (!optionalEmail.isPresent()) {
@@ -60,6 +63,12 @@ public class EmailController {
         }
         Email email = optionalEmail.get();
         String toIds = String.join(", ",email.getTo()); // comma seperated values for list of strings in 'To'
+
+        // Check if the email belongs to specified user or it belongs to specified list of recipients
+        if (!emailService.doesHaveAccess(email, user)) {
+            return "redirect:/";
+        }
+
         model.addAttribute("email", email);
         model.addAttribute("toIds",toIds);
 
