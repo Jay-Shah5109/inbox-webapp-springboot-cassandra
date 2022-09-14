@@ -7,8 +7,12 @@ import io.javabrains.inbox.emailList.EmailListItemRepository;
 import io.javabrains.inbox.folders.UnreadEmailStatsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EmailService {
@@ -72,5 +76,18 @@ public class EmailService {
                 "From: "+email.getFrom()+"\n"+
                 "To: "+email.getTo()+"\n\n"+
                 email.getBody();
+    }
+
+    public List<String> splitIDs(String to) {
+        if (!StringUtils.hasText(to)) {
+            return new ArrayList<String>();
+        }
+        String[] splitIDs = to.split(",");
+        List<String> uniqueToIds = Arrays.asList(splitIDs).stream()
+                .map(id -> StringUtils.trimWhitespace(id))
+                .filter(id -> StringUtils.hasText(id))
+                .distinct()
+                .collect(Collectors.toList());
+        return uniqueToIds;
     }
 }
