@@ -1,12 +1,6 @@
 package io.javabrains.inbox;
 
-import com.datastax.oss.driver.api.core.uuid.Uuids;
-import io.javabrains.inbox.email.Email;
-import io.javabrains.inbox.email.EmailRepository;
 import io.javabrains.inbox.email.EmailService;
-import io.javabrains.inbox.emailList.EmailListItem;
-import io.javabrains.inbox.emailList.EmailListItemKey;
-import io.javabrains.inbox.emailList.EmailListItemRepository;
 import io.javabrains.inbox.folders.Folder;
 import io.javabrains.inbox.folders.FolderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +32,7 @@ public class InboxApplication {
 	@Bean
 	public CqlSessionBuilderCustomizer sessionBuilderCustomizer(DataStaxAstraProperties
 																		dataStaxAstraProperties) {
-		System.out.println("datastax astra prop:"+dataStaxAstraProperties.getSecureConnectBundle().toPath());
 		Path bundle = dataStaxAstraProperties.getSecureConnectBundle().toPath();
-		System.out.println("Bundle:"+bundle);
 		return cqlSessionBuilder -> cqlSessionBuilder.withCloudSecureConnectBundle(bundle);
 	}
 
