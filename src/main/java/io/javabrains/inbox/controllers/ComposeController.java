@@ -64,7 +64,13 @@ public class ComposeController {
         // Handling count functionality
         model.addAttribute("stats", folderService.mapCountToLabels(user));
 
-        if (uuid != null) {
+        if (uuid == null) {
+            model.addAttribute("subject", "");
+            model.addAttribute("body", "");
+            model.addAttribute("username", principal.getAttribute("name"));
+            return "composepage";
+        }
+
             Optional<Email> optionalEmail = emailRepository.findById(uuid);
             if (optionalEmail.isPresent()) {
                 Email email = optionalEmail.get();
@@ -75,9 +81,6 @@ public class ComposeController {
             }
             Email email = optionalEmail.get();
             model.addAttribute("email", email);
-        }
-        model.addAttribute("subject", "subject");
-        model.addAttribute("body", "body");
         model.addAttribute("username", principal.getAttribute("name"));
 
         return "composepage";
