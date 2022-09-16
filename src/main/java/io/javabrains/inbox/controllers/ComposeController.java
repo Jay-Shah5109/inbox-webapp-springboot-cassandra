@@ -1,16 +1,13 @@
 package io.javabrains.inbox.controllers;
 
-import com.datastax.oss.driver.api.core.uuid.Uuids;
 import io.javabrains.inbox.email.Email;
 import io.javabrains.inbox.email.EmailRepository;
 import io.javabrains.inbox.email.EmailService;
-import io.javabrains.inbox.emailList.EmailListItem;
 import io.javabrains.inbox.emailList.EmailListItemKey;
 import io.javabrains.inbox.emailList.EmailListItemRepository;
 import io.javabrains.inbox.folders.Folder;
 import io.javabrains.inbox.folders.FolderRepository;
 import io.javabrains.inbox.folders.FolderService;
-import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -24,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -104,7 +100,8 @@ public class ComposeController {
     }
 
     @GetMapping(value = "/delete")
-    public String delete(@RequestParam UUID uuid, @AuthenticationPrincipal OAuth2User principal, Model model) {
+    public String delete(@RequestParam UUID uuid, @RequestParam String userID,
+                         @RequestParam String presentFolder, @AuthenticationPrincipal OAuth2User principal, Model model) {
 
         if (principal == null || !StringUtils.hasText(principal.getAttribute("login"))) {
             return "inboxpage";
@@ -117,35 +114,18 @@ public class ComposeController {
                 emailRepository.deleteById(uuid);
                 EmailListItemKey emailListItemKey = new EmailListItemKey();
                 emailListItemKey.setId(user);
-                emailListItemKey.setLabel("Inbox");
+                emailListItemKey.setLabel(presentFolder);
                 emailListItemKey.setTimeUUID(uuid);
                 emailListItemRepository.deleteById(emailListItemKey);
+                // Check if the email is present in Sent folder, means if the user has sent email to himself, then
+                // delete from 'Sent' folder as well
+                if (userID.equals(user)) {
+                    emailListItemKey.setLabel("Sent");
+                    emailListItemRepository.deleteById(emailListItemKey);
+                }
             }
         }
-        List<Folder> userFolders = folderRepository.findAllById(user);
-
-        List<Folder> folders = folderRepository.findAll();
-        model.addAttribute("userFolders", userFolders);
-
-        List<Folder> defaultFolders = folderService.getDefaultFolders(user);
-        model.addAttribute("defaultFolders", defaultFolders);
-
-        // Handling count functionality
-        model.addAttribute("stats", folderService.mapCountToLabels(user));
-
-//        model.addAttribute("folders", folders);
-        model.addAttribute("username", principal.getAttribute("name"));
-
-        List<EmailListItem> emailList = emailListItemRepository.findAllByKey_IdAndKey_Label(user, "Inbox");
-
-        PrettyTime prettyTime = new PrettyTime();
-        emailList.stream().forEach(emailListItem -> {
-            UUID uuid1 = emailListItem.getKey().getTimeUUID();
-            Date emailDateTime = new Date(Uuids.unixTimestamp(uuid1));
-            emailListItem.setAgoTimeString(prettyTime.format(emailDateTime));
-        });
-        model.addAttribute("emailList", emailList);
-        model.addAttribute("folderName", "Inbox");
-        return "inboxpage";
+        String redirectURL = "redirect:/?folder="+presentFolder;
+        return redirectURL;
     }
 }
