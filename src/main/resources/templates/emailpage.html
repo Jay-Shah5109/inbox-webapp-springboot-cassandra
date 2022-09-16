@@ -89,7 +89,7 @@
                            class="btn btn-primary btn-sm">Reply</a>
                         <a th:href="@{'/compose?to='+${email.from}+','+${toIds}+'&uuid='+${email.id}}"
                            class="btn btn-primary btn-sm">Reply All</a>
-                        <a th:href="@{'/delete?uuid='+${email.id}}"
+                        <a th:href="@{'/delete?uuid='+${email.id}+'&presentFolder='+${currentFolder}+'&userID='+${user}}"
                            class="btn btn-secondary btn-sm">Delete</a>
                         <div style="margin-top:25px" class="dropdown">
                             <a class="btn btn-primary btn-secondary btn-sm dropdown-toggle" href="#" role="button"
