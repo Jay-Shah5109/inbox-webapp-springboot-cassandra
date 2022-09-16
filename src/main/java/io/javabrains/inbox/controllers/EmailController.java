@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -55,7 +56,17 @@ public class EmailController {
         List<Folder> defaultFolders = folderService.getDefaultFolders(user);
         model.addAttribute("defaultFolders", defaultFolders);
 
+        List<String> allFolders = new ArrayList<>();
+        for (Folder folder1 : userFolders) {
+            allFolders.add(folder1.getLabel());
+        }
+        for (Folder folder1 : defaultFolders) {
+            allFolders.add(folder1.getLabel());
+        }
+        model.addAttribute("allFolders", allFolders);
+
         model.addAttribute("username", principal.getAttribute("name"));
+        model.addAttribute("user", user);
 
         Optional<Email> optionalEmail = emailRepository.findById(id);
         if (!optionalEmail.isPresent()) {
@@ -71,6 +82,7 @@ public class EmailController {
 
         model.addAttribute("email", email);
         model.addAttribute("toIds",toIds);
+        model.addAttribute("currentFolder", folder);
 
         EmailListItemKey emailListItemKey = new EmailListItemKey();
         emailListItemKey.setLabel(folder);

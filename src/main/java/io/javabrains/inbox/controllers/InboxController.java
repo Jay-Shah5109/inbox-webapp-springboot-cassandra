@@ -1,7 +1,11 @@
 package io.javabrains.inbox.controllers;
 
 import com.datastax.oss.driver.api.core.uuid.Uuids;
+import io.javabrains.inbox.email.Email;
+import io.javabrains.inbox.email.EmailRepository;
+import io.javabrains.inbox.email.EmailService;
 import io.javabrains.inbox.emailList.EmailListItem;
+import io.javabrains.inbox.emailList.EmailListItemKey;
 import io.javabrains.inbox.emailList.EmailListItemRepository;
 import io.javabrains.inbox.folders.Folder;
 import io.javabrains.inbox.folders.FolderRepository;
@@ -20,9 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 public class InboxController {
@@ -33,9 +35,16 @@ public class InboxController {
     private EmailListItemRepository emailListItemRepository;
     @Autowired
     private FolderService folderService;
+    @Autowired
+    private EmailRepository emailRepository;
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping(value = "/")
-    public String homePage(@RequestParam(required = false) String folder, @AuthenticationPrincipal OAuth2User principal,
+    public String homePage(@RequestParam(required = false) String folder, @RequestParam(required = false) String moveto,
+                           @RequestParam(required = false) UUID mailID, @RequestParam(required = false) String userID,
+                           @RequestParam(required = false) String presentFolder,
+                           @AuthenticationPrincipal OAuth2User principal,
                            Model model) {
         if (principal == null || !StringUtils.hasText(principal.getAttribute("login"))) {
             return "index";
@@ -74,9 +83,16 @@ public class InboxController {
             emailListItem.setAgoTimeString(prettyTime.format(emailDateTime));
         });
 
-        model.addAttribute("emailList", emailList);
         model.addAttribute("folderName", folder);
+        List<EmailListItem> emailListItems;
 
+        // Move the mail from old to new folder
+        if (moveto != null) {
+            emailService.moveEmailToOtherFolder(userID, presentFolder, mailID, moveto, model);
+            return "inboxpage";
+        }
+
+        model.addAttribute("emailList", emailList);
         return "inboxpage";
     }
 

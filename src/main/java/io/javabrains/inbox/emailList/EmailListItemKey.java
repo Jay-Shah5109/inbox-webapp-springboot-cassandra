@@ -6,13 +6,14 @@ import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyClass;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @PrimaryKeyClass
 public class EmailListItemKey {
 
     @PrimaryKeyColumn(name = "user_id", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
-    private String  id;
+    private String id;
     @PrimaryKeyColumn(name = "label", ordinal = 1, type = PrimaryKeyType.PARTITIONED)
     private String label;
     @PrimaryKeyColumn(name = "created_time_UUID", ordinal = 2, type = PrimaryKeyType.CLUSTERED,
@@ -43,4 +44,16 @@ public class EmailListItemKey {
         this.timeUUID = timeUUID;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EmailListItemKey)) return false;
+        EmailListItemKey that = (EmailListItemKey) o;
+        return id.equals(that.id) && label.equals(that.label) && timeUUID.equals(that.timeUUID);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, label, timeUUID);
+    }
 }
