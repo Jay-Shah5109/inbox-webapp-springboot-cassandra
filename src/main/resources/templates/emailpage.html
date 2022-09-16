@@ -91,6 +91,19 @@
                            class="btn btn-primary btn-sm">Reply All</a>
                         <a th:href="@{'/delete?uuid='+${email.id}}"
                            class="btn btn-secondary btn-sm">Delete</a>
+                        <div style="margin-top:25px" class="dropdown">
+                            <a class="btn btn-primary btn-secondary btn-sm dropdown-toggle" href="#" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">Move To Folder</a>
+                            <ul class="dropdown-menu">
+                                <li><a th:each="folder:${allFolders}" th:value="${folder}"
+                                       th:text="${folder}" class="dropdown-item"
+                                       th:href="@{'/?moveto='+${folder}+'&mailID='+${email.id}+'&userID='+${user}+'&presentFolder='+${currentFolder}}"></a></li>
+                            </ul>
+                        </div>
+<!--                        <select style="margin-top:25px" class="form-control" id="dropDownList">-->
+<!--                            <option value="0">Move this email to other folder</option>-->
+<!--                            <option th:each="folder:${allFolders}" th:value="${folder}" th:text="${folder}"></option>-->
+<!--                        </select>-->
                     </div>
                 </div>
             </main>

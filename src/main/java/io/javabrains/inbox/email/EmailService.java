@@ -7,11 +7,13 @@ import io.javabrains.inbox.emailList.EmailListItemRepository;
 import io.javabrains.inbox.folders.UnreadEmailStatsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -92,5 +94,31 @@ public class EmailService {
                 .distinct()
                 .collect(Collectors.toList());
         return uniqueToIds;
+    }
+
+    public void moveEmailToOtherFolder(String userID, String presentFolder, UUID mailID, String moveto,
+                                       Model model) {
+
+        List<EmailListItem> emailListItems = emailListItemRepository.findAllByKey_IdAndKey_Label(userID,
+                presentFolder);
+        EmailListItemKey emailListItemKey = new EmailListItemKey();
+        emailListItemKey.setId(userID);
+        emailListItemKey.setLabel(presentFolder);
+        emailListItemKey.setTimeUUID(mailID);
+        emailListItemRepository.deleteById(emailListItemKey);
+        EmailListItem removeEmailListItem = null;
+        for (EmailListItem emailListItem : emailListItems) {
+            if (emailListItem.getKey().getTimeUUID().equals(mailID)) {
+                removeEmailListItem = emailListItem;
+                break;
+            }
+        }
+        emailListItems.remove(removeEmailListItem);
+        emailListItemRepository.saveAll(emailListItems); // Add list to repository
+        model.addAttribute("emailList", emailListItems);
+
+        removeEmailListItem.getKey().setLabel(moveto); // Assign new folder to the removed email item and
+        // add it to repository
+        emailListItemRepository.save(removeEmailListItem);
     }
 }
