@@ -70,6 +70,9 @@ public class EmailService {
     }
 
     public String getReplySubject(String subject) {
+        if (subject.substring(0,3).equals("Re:")) {
+            return subject;
+        }
         return "Re: "+subject;
     }
 
